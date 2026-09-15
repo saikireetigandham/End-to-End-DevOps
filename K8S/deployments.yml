@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-restaurant-builder
+  labels:
+    app: flask-restaurant-builder
+spec:
+
+  replicas: 4
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2 
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: flask-restaurant-builder
+  template:
+    metadata:
+      labels:
+        app: flask-restaurant-builder
+  spec:
+    containers:
+      - name: flask-restaurant-builder
+        image: saikireeti/devops/flask-restaurant-builder:latest
+        ports:
+        - containerPort: 5000
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 15
+        
